@@ -1,7 +1,7 @@
 package com.course.jwt;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
+import com.course.util.AESUtil;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class JwtTokenUtil {
 
     public static final int REFRESH_TOKEN_TIMEE = 60;
 
-    public static final int ACCESS_TOKEN_TIME = 70;
+    public static final int ACCESS_TOKEN_TIME = 30;
 
 
     public static final String REFRESH_TOKEN_MANE = "COURSE_REFRESH_TOKEN";
@@ -37,14 +37,11 @@ public class JwtTokenUtil {
         return clams.get("userId", String.class);
     }
 
-    ;
 
     public static String getTxKeyFromToken(String token) throws Exception {
         final Claims clams = getAllClaimsFromToken(token);
         return clams.get("txKey", String.class);
     }
-
-    ;
 
 
     public static Date getExpirationDateFromToken(String token) throws Exception {
@@ -59,7 +56,7 @@ public class JwtTokenUtil {
     }
 
     private static Claims getAllClaimsFromToken(String token) throws Exception {
-        return Jwts.parser().setSigningKey(getKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(AESUtil.getKey()).build().parseClaimsJws(token).getBody();
 
     }
 
@@ -77,21 +74,14 @@ public class JwtTokenUtil {
 
     }
 
-    public static String generateRefreshToken(String userId)throws Exception {
-        return UUID.randomUUID().toString().replace("-","")+ RandomStringUtils.random(8, userId);
+    public static String generateRefreshToken(String userId) throws Exception {
+        return UUID.randomUUID().toString().replace("-", "") + RandomStringUtils.random(8, userId);
     }
 
     private static String doGenerateToken(Map<String, Object> claims, String subject, Integer limitTime) throws Exception {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(
-                new Date(System.currentTimeMillis() + limitTime * 60 * 1000)).signWith(SignatureAlgorithm.HS512, getKey()).compact();
+                new Date(System.currentTimeMillis() + limitTime * 60 * 1000)).signWith(SignatureAlgorithm.HS512, AESUtil.getKey()).compact();
     }
 
 
-    private static String getKey() throws Exception {
-        String key = "COURSE_KEY";
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.reset();
-        md.update(key.getBytes("utf8"));
-        return String.format("%0128x", new BigInteger(1, md.digest()));
-    }
 }

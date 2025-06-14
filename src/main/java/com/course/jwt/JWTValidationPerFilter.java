@@ -1,6 +1,6 @@
 package com.course.jwt;
 
-import com.course.LongService;
+import com.course.service.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class JWTValidationPerFilter extends OncePerRequestFilter {
 
 
     @Autowired
-    private LongService longService;
+    private LoginService longService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
