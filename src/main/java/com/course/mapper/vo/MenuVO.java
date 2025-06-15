@@ -9,5 +9,5 @@ public class MenuVO {
     private String title;
     private String description;
     private String role;
-
+    private String path;
 }

@@ -1,4 +1,4 @@
-package com.course.model;
+package com.course.model.auth;
 
 import lombok.Data;
 
@@ -10,4 +10,5 @@ public class LoginRequest implements Serializable {
     private String password;
     private String captchaId;
     private String captchaCode;
+    private String isFirstLogin;
 }

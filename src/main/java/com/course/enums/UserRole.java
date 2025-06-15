@@ -2,11 +2,11 @@ package com.course.enums;
 
 public enum UserRole {
 
-    STUDENT("student"),
+    STUDENT("STUDENT"),
 
-    TEACHER("teacher"),
+    TEACHER("TEACHER"),
 
-    ADMIN("admin");
+    ADMIN("ADMIN");
 
 
     private final String value;

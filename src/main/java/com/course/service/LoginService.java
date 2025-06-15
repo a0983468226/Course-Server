@@ -1,6 +1,6 @@
 package com.course.service;
 
-import com.course.jwt.JwtTokenUtil;
+import com.course.security.jwt.JwtTokenUtil;
 import com.course.mapper.vo.MenuVO;
 import com.course.mapper.vo.UserVO;
 import com.course.redis.RedisKeyValueCode;
@@ -119,6 +119,9 @@ public class LoginService {
         }
     }
 
+    public void setCaptchaByCaptchaId(String captchaId, String captcha) {
+        stringRedisTemplate.opsForValue().set(RedisKeyValueCode.CAPTCHAID_2_CAPTCHA + captchaId, captcha, 60, TimeUnit.MINUTES);
+    }
 
     public UserVO findByUsername(String username) throws Exception {
         return userService.findByUsername(username);

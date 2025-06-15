@@ -1,4 +1,4 @@
-package com.course.jwt;
+package com.course.security.jwt;
 
 
 import com.google.gson.JsonObject;

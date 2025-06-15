@@ -1,7 +1,11 @@
 package com.course.mapper;
 
+import com.course.mapper.sqlprovider.CourseSqlProvider;
 import com.course.mapper.vo.CourseVO;
+import com.course.model.courses.CourseQueryParam;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface CoursesMapper {
@@ -20,6 +24,14 @@ public interface CoursesMapper {
             @Result(property = "location", column = "location")
     })
     CourseVO findById(@Param("id") String id);
+
+
+    @Select("Select * from courses")
+    @ResultMap("basicMap")
+    List<CourseVO> findAll();
+
+    @SelectProvider(type = CourseSqlProvider.class, method = "buildSearchSql")
+    List<CourseVO> findByParam(CourseQueryParam param);
 
     @Insert("INSERT INTO courses (id, code, name, description, credit, teacher_id, capacity, semester_id, schedule, location) " +
             "VALUES (#{id}, #{code}, #{name}, #{description}, #{credit}, #{teacherId}, #{capacity}, #{semesterId}, #{schedule}, #{location})")

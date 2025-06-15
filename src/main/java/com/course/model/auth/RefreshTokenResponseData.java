@@ -1,5 +1,6 @@
-package com.course.model;
+package com.course.model.auth;
 
+import com.course.model.AbstractResponseData;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 

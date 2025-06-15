@@ -13,7 +13,8 @@ public interface MenuMapper {
             @Result(property = "id", column = "id"),
             @Result(property = "title", column = "title"),
             @Result(property = "description", column = "description"),
-            @Result(property = "role", column = "role")
+            @Result(property = "role", column = "role"),
+            @Result(property = "path", column = "path")
     })
     MenuVO findById(@Param("id") String id);
 
@@ -21,7 +22,7 @@ public interface MenuMapper {
     @ResultMap("basicMap")
     List<MenuVO> findByRole(@Param("role") String role);
 
-    @Insert("INSERT INTO menu (id, title, description, role) VALUES (#{id}, #{title}, #{description}, #{role})")
+    @Insert("INSERT INTO menu (id, title, description, role,path) VALUES (#{id}, #{title}, #{description}, #{role}) , #{path}")
     int insert(MenuVO semester);
 
 
@@ -35,6 +36,7 @@ public interface MenuMapper {
             "  <if test='title != null'>name = #{title},</if>",
             "  <if test='description != null'>start_at = #{description},</if>",
             "  <if test='role != null'>end_at = #{role},</if>",
+            "  <if test='path != null'>end_at = #{path},</if>",
             "</set>",
             "WHERE id = #{id}",
             "</script>"

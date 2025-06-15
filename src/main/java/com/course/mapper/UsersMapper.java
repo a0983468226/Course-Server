@@ -15,7 +15,10 @@ public interface UsersMapper {
             @Result(property = "email", column = "email"),
             @Result(property = "role", column = "role"),
             @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "status" , column = "status")
+            @Result(property = "status" , column = "status"),
+            @Result(property = "isFirstLogin" , column = "is_first_login"),
+            @Result(property = "updateAt" , column = "update_at"),
+            @Result(property = "lastLoginTime" , column = "last_login_time")
     })
     UserVO findById(@Param("id") String id);
 
@@ -25,8 +28,8 @@ public interface UsersMapper {
     UserVO findByUsername(@Param("username") String username);
 
 
-    @Insert("INSERT INTO users (id, username, password_hash, name, email, role, created_at , status) " +
-            "VALUES (#{id}, #{username}, #{passwordHash}, #{name}, #{email}, #{role}, #{createdAt} ,#{status})")
+    @Insert("INSERT INTO users (id, username, password_hash, name, email, role, created_at , status , is_first_login , , last_login_time) " +
+            "VALUES (#{id}, #{username}, #{passwordHash}, #{name}, #{email}, #{role}, #{createdAt} ,#{status} , #{isFirstLogin} ,#{updateAt} , #{lastLoginTime})")
     int insert(UserVO user);
 
     @Delete("DELETE FROM users WHERE id=#{id}")
@@ -41,7 +44,9 @@ public interface UsersMapper {
             "  <if test='name != null'>name = #{name},</if>",
             "  <if test='email != null'>email = #{email},</if>",
             "  <if test='role != null'>role = #{role},</if>",
-            "  <if test='status != null'>role = #{status},</if>",
+            "  <if test='isFirstLogin != null'>is_first_login = #{isFirstLogin},</if>",
+            "  <if test='updateAt != null'>update_at = #{updateAt},</if>",
+            "  <if test='lastLoginTime != null'>last_login_time = #{lastLoginTime},</if>",
             "</set>",
             "WHERE id = #{id}",
             "</script>"

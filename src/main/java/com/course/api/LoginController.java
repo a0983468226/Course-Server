@@ -1,15 +1,19 @@
 package com.course.api;
 
-import com.course.jwt.JwtTokenUtil;
+import com.course.security.jwt.JwtTokenUtil;
 import com.course.mapper.vo.MenuVO;
 import com.course.mapper.vo.UserVO;
 import com.course.model.*;
+import com.course.model.auth.*;
 import com.course.service.LoginService;
+import com.course.service.UserService;
 import com.course.util.AESUtil;
+import com.course.util.CommonUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +29,8 @@ public class LoginController {
 
     @Autowired
     private LoginService loginService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/auth/login")
     public BasicResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest,
@@ -45,16 +51,16 @@ public class LoginController {
             }
 
             String captcha = null;
-//            if (StringUtils.isNotBlank(loginRequest.getCaptchaId())) {
-//                captcha = loginService.getCaptchaByCaptchaId(loginRequest.getCaptchaId());
-//                loginService.clearCaptchaByCaptchaId(loginRequest.getCaptchaId());
-//            }
+            if (StringUtils.isNotBlank(loginRequest.getCaptchaId())) {
+                captcha = loginService.getCaptchaByCaptchaId(loginRequest.getCaptchaId());
+                loginService.clearCaptchaByCaptchaId(loginRequest.getCaptchaId());
+            }
 
-//            if (StringUtils.equalsIgnoreCase(captcha, loginRequest.getCaptchaCode())) {
-//                response.setSuccess(false);
-//                response.setMessage("登入失敗 : 驗證碼錯誤");
-//                return response;
-//            }
+            if (!StringUtils.equalsIgnoreCase(captcha, loginRequest.getCaptchaCode())) {
+                response.setSuccess(false);
+                response.setMessage("登入失敗 : 驗證碼錯誤");
+                return response;
+            }
 
 
             UserVO user = loginService.findByUsername(loginRequest.getUsername());
@@ -77,15 +83,17 @@ public class LoginController {
                 menuList.add(m);
             }
 
+            data.setUserId(user.getId());
             data.setName(user.getName());
             data.setEmail(user.getEmail());
             data.setRole(user.getRole());
+            data.setIsFirstLogin(user.getIsFirstLogin());
             data.setMenus(menuList);
 
             Integer accessTokenTime = loginService.getAccessTokenSessionTime();
             Integer refreshTokenTime = loginService.geRefreshTokenSessionTime();
 
-            String accessToken = JwtTokenUtil.generateToken(user.getId(), user.getUsername(), accessTokenTime);
+            String accessToken = JwtTokenUtil.generateToken(user.getId(), user.getUsername(), accessTokenTime, user.getRole());
             data.setAccessToken(accessToken);
             data.setAccessTokenExp(JwtTokenUtil.getExpirationDateFromToken(accessToken));
 
@@ -102,15 +110,21 @@ public class LoginController {
             loginService.setRefreshTokenToCookie(httpResponse, refreshToken, refreshTokenTime);
             loginService.setRefreshTokenByUserId(refreshToken, user.getId(), loginService.getRedisRefreshTokenTime());
 
+            UserVO vo = new UserVO();
+            vo.setId(user.getId());
+            vo.setLastLoginTime(new Date());
+            userService.update(vo);
+
             response.setData(data);
             response.setSuccess(true);
             return response;
 
         } catch (Exception e) {
             e.printStackTrace();
+            response.setSuccess(false);
+            response.setMessage("登入失敗 : 使用者資料更新錯誤");
+            return response;
         }
-
-        return response;
     }
 
 
@@ -166,7 +180,7 @@ public class LoginController {
 
         Integer accessTokenTime = loginService.getAccessTokenSessionTime();
         Integer refreshTokenTime = loginService.geRefreshTokenSessionTime();
-        String accessToken = JwtTokenUtil.generateToken(id, uid, accessTokenTime);
+        String accessToken = JwtTokenUtil.generateToken(id, uid, accessTokenTime, userVo.getRole());
         data.setAccessToken(accessToken);
         data.setAccessTokenExp(JwtTokenUtil.getExpirationDateFromToken(accessToken));
 
@@ -187,6 +201,52 @@ public class LoginController {
         response.setSuccess(true);
         return response;
 
+    }
+
+    @PostMapping("/auth/captcha")
+    public BasicResponse<CaptchaResponse> captcha() throws Exception {
+        BasicResponse<CaptchaResponse> response = new BasicResponse<>();
+        CaptchaResponse responseData = new CaptchaResponse();
+
+        String uuid = CommonUtil.getUUID();
+        String captcha = RandomStringUtils.random(4, false, true);
+        loginService.setCaptchaByCaptchaId(uuid, captcha);
+        responseData.setImage(CommonUtil.getCaptchaBase64String(captcha));
+        responseData.setId(uuid);
+        response.setData(responseData);
+        response.setSuccess(true);
+        return response;
+    }
+
+
+    @PostMapping("/auth/logout")
+    public BasicResponse<LogoutResponse> logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws Exception {
+        BasicResponse<LogoutResponse> response = new BasicResponse<>();
+        LogoutResponse responseData = new LogoutResponse();
+        Cookie[] cookies = httpRequest.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (StringUtils.equals(JwtTokenUtil.REFRESH_TOKEN_MANE, cookie.getName())) {
+                    cookie.setValue("");
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    cookie.setSecure(true);
+                    httpResponse.addCookie(cookie);
+                }
+            }
+        }
+
+        Cookie cookie = new Cookie(JwtTokenUtil.REFRESH_TOKEN_MANE, "logout");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        httpResponse.addCookie(cookie);
+
+        response.setData(responseData);
+        response.setSuccess(true);
+        return response;
     }
 
 }

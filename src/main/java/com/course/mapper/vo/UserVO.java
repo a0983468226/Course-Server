@@ -15,5 +15,7 @@ public class UserVO {
     private String role;
     private Date createdAt;
     private int status;
-
+    private String isFirstLogin;
+    private Date updateAt;
+    private Date lastLoginTime;
 }
