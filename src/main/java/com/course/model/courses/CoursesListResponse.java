@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class CoursesListResponse extends AbstractResponseData {
 
-    private List<Courses> courses;
+    private List<Course> courses;
 }

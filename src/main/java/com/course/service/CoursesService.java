@@ -1,10 +1,12 @@
 package com.course.service;
 
 import com.course.mapper.CoursesMapper;
+import com.course.mapper.vo.CourseDetailVO;
 import com.course.mapper.vo.CourseVO;
-import com.course.model.courses.CourseQueryParam;
+import com.course.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,12 +16,40 @@ public class CoursesService {
     @Autowired
     private CoursesMapper coursesMapper;
 
-    public List<CourseVO> findByParam(CourseQueryParam request) throws Exception {
-        return coursesMapper.findByParam(request);
-    }
-
-    public CourseVO findById(String id) throws Exception {
+    public CourseDetailVO findById(String id) throws Exception {
         return coursesMapper.findById(id);
     }
 
+    public List<CourseDetailVO> findCoursesDetailByTeacher(String teacherId) throws Exception {
+        return coursesMapper.findCoursesDetailByTeacher(teacherId);
+    }
+
+    public List<CourseDetailVO> findCoursesDetailBySemesters(String semesterId) throws Exception {
+        return coursesMapper.findCoursesDetailBySemesters(semesterId);
+    }
+
+    @Transactional
+    public synchronized void insert(CourseVO vo) throws Exception {
+        vo.setId(CommonUtil.getUUID());
+        int count = coursesMapper.insert(vo);
+        if (count != 1) {
+            throw new IllegalStateException("新增資料不為1筆");
+        }
+    }
+
+    @Transactional
+    public synchronized void update(CourseVO vo, String userId) throws Exception {
+        int count = coursesMapper.teacherUpdateCourse(vo, userId);
+        if (count != 1) {
+            throw new IllegalStateException("更新資料不為1筆");
+        }
+    }
+
+    @Transactional
+    public synchronized void delete(String id) throws Exception {
+        int count = coursesMapper.delete(id);
+        if (count != 1) {
+            throw new IllegalStateException("刪除資料不為1筆");
+        }
+    }
 }

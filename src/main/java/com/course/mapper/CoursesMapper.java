@@ -1,6 +1,7 @@
 package com.course.mapper;
 
 import com.course.mapper.sqlprovider.CourseSqlProvider;
+import com.course.mapper.vo.CourseDetailVO;
 import com.course.mapper.vo.CourseVO;
 import com.course.model.courses.CourseQueryParam;
 import org.apache.ibatis.annotations.*;
@@ -10,8 +11,10 @@ import java.util.List;
 @Mapper
 public interface CoursesMapper {
 
-    @Select("SELECT * FROM courses WHERE id = #{id}")
-    @Results(id = "basicMap", value = {
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id")
+    @Results(id = "coursesMap", value = {
             @Result(property = "id", column = "id"),
             @Result(property = "code", column = "code"),
             @Result(property = "name", column = "name"),
@@ -21,14 +24,36 @@ public interface CoursesMapper {
             @Result(property = "capacity", column = "capacity"),
             @Result(property = "semesterId", column = "semester_id"),
             @Result(property = "schedule", column = "schedule"),
-            @Result(property = "location", column = "location")
+            @Result(property = "location", column = "location"),
+            @Result(property = "teacherName", column = "teacher_name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "semestersName", column = "semesters_name"),
+            @Result(property = "startAt", column = "start_at"),
+            @Result(property = "endAt", column = "end_at")
     })
-    CourseVO findById(@Param("id") String id);
+    List<CourseDetailVO> findCoursesDetail();
 
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id " +
+            "where c.id = #{coursesId}")
+    @ResultMap("coursesMap")
+    CourseDetailVO findById(@Param("coursesId") String coursesId);
 
-    @Select("Select * from courses")
-    @ResultMap("basicMap")
-    List<CourseVO> findAll();
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id " +
+            "where u.id = #{teacherId}")
+    @ResultMap("coursesMap")
+    List<CourseDetailVO>findCoursesDetailByTeacher(@Param("teacherId") String teacherId);
+
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id " +
+            "where s.id = #{semesterId}")
+    @ResultMap("coursesMap")
+    List<CourseDetailVO>findCoursesDetailBySemesters(@Param("semesterId") String semesterId);
+
 
     @SelectProvider(type = CourseSqlProvider.class, method = "buildSearchSql")
     List<CourseVO> findByParam(CourseQueryParam param);
@@ -55,8 +80,8 @@ public interface CoursesMapper {
             "  <if test='schedule != null'>schedule = #{schedule},</if>",
             "  <if test='location != null'>location = #{location},</if>",
             "</set>",
-            "WHERE id = #{id}",
+            "WHERE id = #{id} and teacher_id = #{teacherId}",
             "</script>"
     })
-    int update(CourseVO course);
+    int teacherUpdateCourse(CourseVO course, String teacherId);
 }

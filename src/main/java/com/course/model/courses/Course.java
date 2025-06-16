@@ -2,8 +2,10 @@ package com.course.model.courses;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class Courses {
+public class Course {
     private String id;
     private String code;
     private String name;
@@ -14,4 +16,9 @@ public class Courses {
     private String semesterId;
     private String schedule;
     private String location;
+    private String teacherName;
+    private String email;
+    private String semestersName;
+    private Date startAt;
+    private Date endAt;
 }

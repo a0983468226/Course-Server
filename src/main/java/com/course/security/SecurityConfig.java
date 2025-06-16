@@ -4,7 +4,7 @@ import com.course.enums.UserRole;
 import com.course.security.jwt.JWTValidationPerFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JWTValidationPerFilter jwtValidationPerFilter;
@@ -28,9 +29,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.toString())
-                        .requestMatchers("/teacher/**").hasRole(UserRole.TEACHER.toString())
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/teachers/**").hasRole(UserRole.TEACHER.toString())
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtValidationPerFilter, UsernamePasswordAuthenticationFilter.class);

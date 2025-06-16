@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequestMapping("/auth")
 public class LoginController {
 
     @Autowired
@@ -32,7 +34,7 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public BasicResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest,
                                               HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         BasicResponse<LoginResponse> response = new BasicResponse<>();
@@ -128,7 +130,7 @@ public class LoginController {
     }
 
 
-    @PostMapping("/auth/refresh-token")
+    @PostMapping("/refresh-token")
     public BasicResponse<RefreshTokenResponseData> refreshToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
         BasicResponse<RefreshTokenResponseData> response = new BasicResponse<>();
         RefreshTokenResponseData data = new RefreshTokenResponseData();
@@ -203,7 +205,7 @@ public class LoginController {
 
     }
 
-    @PostMapping("/auth/captcha")
+    @PostMapping("/captcha")
     public BasicResponse<CaptchaResponse> captcha() throws Exception {
         BasicResponse<CaptchaResponse> response = new BasicResponse<>();
         CaptchaResponse responseData = new CaptchaResponse();
@@ -219,7 +221,7 @@ public class LoginController {
     }
 
 
-    @PostMapping("/auth/logout")
+    @PostMapping("/logout")
     public BasicResponse<LogoutResponse> logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
             throws Exception {
         BasicResponse<LogoutResponse> response = new BasicResponse<>();

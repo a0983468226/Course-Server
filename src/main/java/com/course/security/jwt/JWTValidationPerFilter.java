@@ -67,7 +67,9 @@ public class JWTValidationPerFilter extends OncePerRequestFilter {
                 sendResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 return;
             }
+            List<String> roles = Arrays.asList(role.split(","));
 
+            JwtUserDetails userDetails = new JwtUserDetails(userId, roles);
 
             String access = loginService.getAccessTokenByUserId(userId);
             String[] accessSp = access.split("&");
@@ -81,18 +83,15 @@ public class JWTValidationPerFilter extends OncePerRequestFilter {
             }
 
             if (check) {
-                List<GrantedAuthority> authorities = Arrays.stream(role.split(","))
+                List<GrantedAuthority> authorities = roles.stream()
                         .map(String::trim)
                         .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
                         .collect(Collectors.toList());
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                System.out.println("Authorities = " + authorities);
-
                 JWTServletRequestWrapper wrappedRequest = new JWTServletRequestWrapper(request, txKey, userId, new Date());
                 filterChain.doFilter(wrappedRequest, response);
             } else {
