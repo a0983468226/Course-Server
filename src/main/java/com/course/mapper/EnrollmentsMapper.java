@@ -1,12 +1,14 @@
 package com.course.mapper;
 
+import com.course.mapper.vo.EnrollmentStudentVO;
 import com.course.mapper.vo.EnrollmentVO;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
+import java.util.List;
+
 @Mapper
 public interface EnrollmentsMapper {
-    @Mapper
-    public interface EnrollmentMapper {
 
         @Select("SELECT * FROM enrollments WHERE id = #{id}")
         @Results(id = "basicMap", value = {
@@ -17,7 +19,21 @@ public interface EnrollmentsMapper {
                 @Result(property = "enrolledAt", column = "enrolled_at")
         })
         EnrollmentVO findById(@Param("id") String id);
-    }
+
+
+    @Select("SELECT e.* , u.id as student_id , u.student_name as studentName " +
+            " FROM enrollments e join users on u.id = e.student_id" +
+            " join courses c on c.id = e.course_id " +
+            " where u.status = 1 and c.id = #{id}")
+    @Results(id = "basicMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "studentId", column = "student_id"),
+            @Result(property = "studentName", column = "student_name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "status", column = "status"),
+            @Result(property = "enrolledAt", column = "enrolled_at")
+    })
+    List<EnrollmentStudentVO> findByCoursesId(@Param("id") String id);
 
     @Update({
             "<script>",

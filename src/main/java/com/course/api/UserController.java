@@ -2,71 +2,135 @@ package com.course.api;
 
 import com.course.mapper.vo.UserVO;
 import com.course.model.BasicResponse;
-import com.course.model.user.FinduserByIdResponse;
-import com.course.model.user.UpdateUserRequest;
-import com.course.model.user.UpdateUserResponse;
+import com.course.model.user.*;
 import com.course.security.authorize.AdminOnly;
+import com.course.security.jwt.JwtUserDetails;
 import com.course.service.UserService;
+import com.course.util.CommonUtil;
+import com.course.util.ResponseUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
-
-    Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
 
     @GetMapping("/{id}")
-    public BasicResponse<FinduserByIdResponse> finduserById(@PathVariable String id) {
-        BasicResponse<FinduserByIdResponse> response = new BasicResponse<FinduserByIdResponse>();
-        FinduserByIdResponse data = new FinduserByIdResponse();
-        try {
-            UserVO vo = userService.findById(id);
-            if (vo != null) {
-                BeanUtils.copyProperties(vo, data);
-            }
-            response.setData(data);
-            response.setMessage("success");
-            response.setSuccess(true);
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setMessage("使用者查詢失敗");
-            response.setSuccess(false);
-            return response;
-        }
+    public BasicResponse<FinduserByIdResponse> finduserById(@AuthenticationPrincipal JwtUserDetails user) {
+        return ResponseUtil.execute(
+                () -> {
+                    FinduserByIdResponse data = new FinduserByIdResponse();
+                    UserVO vo = userService.findById(user.getUserId());
+                    if (vo != null) {
+                        BeanUtils.copyProperties(vo, data);
+                    }
+                    return data;
+                },
+                "success",
+                "使用者查詢失敗"
+        );
+    }
+
+
+    @PutMapping("/{id}")
+    public BasicResponse<UpdateUserResponse> updateUserById(@AuthenticationPrincipal JwtUserDetails user,
+                                                            @RequestBody UpdateUserRequest request) {
+        return ResponseUtil.execute(
+                () -> {
+                    UserVO vo = new UserVO();
+                    vo.setName(request.getName());
+                    vo.setEmail(request.getEmail());
+                    vo.setId(user.getUserId());
+                    vo.setPasswordHash(request.getPassword());
+                    userService.update(vo);
+                    return new UpdateUserResponse();
+                },
+                "success",
+                "更新使用者失敗"
+        );
+    }
+
+    @GetMapping()
+    @AdminOnly
+    public BasicResponse<FinduserResponse> findUser() {
+        return ResponseUtil.execute(
+                () -> {
+                    List<UserVO> vos = userService.getAllUsers();
+                    List<User> users = new ArrayList<>();
+                    for (UserVO vo : vos) {
+                        User user = new User();
+                        BeanUtils.copyProperties(vo, user);
+                        users.add(user);
+                    }
+                    FinduserResponse data = new FinduserResponse();
+                    data.setUsers(users);
+                    return data;
+                },
+                "success",
+                "使用者查詢失敗"
+        );
+    }
+
+    // 建立帳號
+    @PostMapping()
+    @AdminOnly
+    public BasicResponse<UpdateUserResponse> insert(@Validated @RequestBody InsertUserRequest request) {
+        return ResponseUtil.execute(
+                () -> {
+                    UserVO vo = new UserVO();
+                    BeanUtils.copyProperties(vo, request);
+                    vo.setPasswordHash(request.getPassword());
+                    vo.setId(CommonUtil.getUUID());
+                    vo.setCreatedAt(new Date());
+                    vo.setStatus(1);
+                    vo.setIsFirstLogin("N");
+                    vo.setUpdateAt(new Date());
+                    userService.insert(vo);
+                    return new UpdateUserResponse();
+                },
+                "success",
+                "更新使用者失敗"
+        );
     }
 
     @PutMapping()
     @AdminOnly
     public BasicResponse<UpdateUserResponse> updateUser(@Validated @RequestBody UpdateUserRequest request) {
-        BasicResponse<UpdateUserResponse> response = new BasicResponse<UpdateUserResponse>();
-        UpdateUserResponse data = new UpdateUserResponse();
-        try {
-            UserVO vo = new UserVO();
-            BeanUtils.copyProperties(vo, request);
-            vo.setPasswordHash(request.getPassword());
-            userService.update(vo);
+        return ResponseUtil.execute(
+                () -> {
+                    UserVO vo = new UserVO();
+                    BeanUtils.copyProperties(vo, request);
+                    vo.setPasswordHash(request.getPassword());
+                    userService.update(vo);
+                    return new UpdateUserResponse();
+                },
+                "success",
+                "更新使用者失敗"
+        );
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setMessage("更新使用者失敗");
-            response.setSuccess(false);
-            return response;
-        }
-
-        response.setData(data);
-        response.setMessage("success");
-        response.setSuccess(true);
-        return response;
+    @DeleteMapping("/{id}")
+    @AdminOnly
+    public BasicResponse<UpdateUserResponse> deleteUser(@PathVariable String id) {
+        return ResponseUtil.execute(
+                () -> {
+                    userService.updateStatus(id);
+                    return new UpdateUserResponse();
+                },
+                "success",
+                "更新使用者失敗"
+        );
     }
 
 }

@@ -1,10 +1,12 @@
 package com.course.api;
 
-import com.course.mapper.vo.CourseDetailVO;
+import com.course.mapper.vo.EnrollmentStudentVO;
 import com.course.model.BasicResponse;
-import com.course.model.courses.Course;
-import com.course.model.teacher.FindCoursesByIdResponse;
+import com.course.model.teacher.EnrollmentStudent;
+import com.course.model.teacher.FindStudentByCourseResponse;
 import com.course.service.CoursesService;
+import com.course.service.EnrollmentService;
+import com.course.util.ResponseUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,29 +24,29 @@ public class TeacherController {
     @Autowired
     private CoursesService coursesService;
 
-    @GetMapping("/{id}/courses")
-    public BasicResponse<FindCoursesByIdResponse> findCoursesById(@PathVariable String id) {
-        BasicResponse<FindCoursesByIdResponse> response = new BasicResponse<>();
-        FindCoursesByIdResponse data = new FindCoursesByIdResponse();
-        try {
-            List<CourseDetailVO> vos = coursesService.findCoursesDetailByTeacher(id);
-            List<Course> cList = new ArrayList<>();
-            for (CourseDetailVO vo : vos) {
-                Course c = new Course();
-                BeanUtils.copyProperties(vo, c);
-                cList.add(c);
-            }
-            data.setCourses(cList);
+    @Autowired
+    private EnrollmentService enrollmentService;
 
-            response.setData(data);
-            response.setMessage("success");
-            response.setSuccess(true);
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setMessage("查詢失敗");
-            response.setSuccess(false);
-            return response;
-        }
+    @GetMapping("/courses/{id}/students")
+    public BasicResponse<FindStudentByCourseResponse> FindStudentByCourses(@PathVariable String id) {
+        return ResponseUtil.execute(
+                () -> {
+                    List<EnrollmentStudentVO> vos = enrollmentService.findByCoursesId(id);
+                    List<EnrollmentStudent> eList = new ArrayList<>();
+                    for (EnrollmentStudentVO vo : vos) {
+                        EnrollmentStudent c = new EnrollmentStudent();
+                        BeanUtils.copyProperties(vo, c);
+                        eList.add(c);
+                    }
+                    FindStudentByCourseResponse data = new FindStudentByCourseResponse();
+                    data.setStudents(eList);
+                    return data;
+                },
+                "success",
+                "查詢失敗"
+        );
     }
+
+
+
 }

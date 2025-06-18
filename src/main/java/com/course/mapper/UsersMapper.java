@@ -3,6 +3,8 @@ package com.course.mapper;
 import com.course.mapper.vo.UserVO;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UsersMapper {
 
@@ -22,6 +24,10 @@ public interface UsersMapper {
     })
     UserVO findById(@Param("id") String id);
 
+    @Select("SELECT * FROM users ")
+    @ResultMap("basicMap")
+    List<UserVO> getAllUsers();
+
 
     @Select("SELECT * FROM users WHERE username = #{username} and status = '1'")
     @ResultMap("basicMap")
@@ -32,7 +38,7 @@ public interface UsersMapper {
             "VALUES (#{id}, #{username}, #{passwordHash}, #{name}, #{email}, #{role}, #{createdAt} ,#{status} , #{isFirstLogin} ,#{updateAt} , #{lastLoginTime})")
     int insert(UserVO user);
 
-    @Delete("DELETE FROM users WHERE id=#{id}")
+    @Update("Update  users  set status = 0 WHERE id=#{id}")
     int delete(@Param("id") String id);
 
     @Update({

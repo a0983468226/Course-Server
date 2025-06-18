@@ -3,6 +3,7 @@ package com.course.service;
 import com.course.mapper.CoursesMapper;
 import com.course.mapper.vo.CourseDetailVO;
 import com.course.mapper.vo.CourseVO;
+import com.course.mapper.vo.courseRequestDetailVO;
 import com.course.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,24 @@ public class CoursesService {
         return coursesMapper.findCoursesDetailBySemesters(semesterId);
     }
 
+    public List<courseRequestDetailVO> findCourseRequestByCourseId (String courseId) throws Exception {
+        return coursesMapper.findCourseRequestByCourseId(courseId);
+    }
+
     @Transactional
     public synchronized void insert(CourseVO vo) throws Exception {
         vo.setId(CommonUtil.getUUID());
         int count = coursesMapper.insert(vo);
         if (count != 1) {
             throw new IllegalStateException("新增資料不為1筆");
+        }
+    }
+
+    @Transactional
+    public synchronized void updateStatus(String id, String status) throws Exception {
+        int count = coursesMapper.updateStatus(id, status);
+        if (count != 1) {
+            throw new IllegalStateException("更新資料不為1筆");
         }
     }
 
