@@ -16,4 +16,5 @@ public class CourseVO {
     private String schedule;
     private String location;
     private String status;
+    private Integer studyNumber;
 }

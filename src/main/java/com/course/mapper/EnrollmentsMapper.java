@@ -10,15 +10,15 @@ import java.util.List;
 @Mapper
 public interface EnrollmentsMapper {
 
-        @Select("SELECT * FROM enrollments WHERE id = #{id}")
-        @Results(id = "basicMap", value = {
-                @Result(property = "id", column = "id"),
-                @Result(property = "studentId", column = "student_id"),
-                @Result(property = "courseId", column = "course_id"),
-                @Result(property = "status", column = "status"),
-                @Result(property = "enrolledAt", column = "enrolled_at")
-        })
-        EnrollmentVO findById(@Param("id") String id);
+    @Select("SELECT * FROM enrollments WHERE id = #{id}")
+    @Results(id = "basicMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "studentId", column = "student_id"),
+            @Result(property = "courseId", column = "course_id"),
+            @Result(property = "status", column = "status"),
+            @Result(property = "enrolledAt", column = "enrolled_at")
+    })
+    EnrollmentVO findById(@Param("id") String id);
 
 
     @Select("SELECT e.* , u.id as student_id , u.student_name as studentName " +
@@ -35,6 +35,11 @@ public interface EnrollmentsMapper {
     })
     List<EnrollmentStudentVO> findByCoursesId(@Param("id") String id);
 
+    @Select("SELECT * FROM enrollments WHERE student_id = #{studentId} and course_id =#{courseId} ")
+    @ResultMap("basicMap")
+    List<EnrollmentVO> findByStudentAndCourse(@Param("studentId") String studentId, @Param("courseId") String courseId);
+
+
     @Update({
             "<script>",
             "UPDATE enrollments",
@@ -48,6 +53,10 @@ public interface EnrollmentsMapper {
             "</script>"
     })
     int update(EnrollmentVO enrollment);
+
+    @Update("Update set status = #{status} where id = #{id}")
+    int updateByStatus(@Param("id") String id, @Param("status") String status);
+
 
     @Insert("INSERT INTO enrollments (id, student_id, course_id, status, enrolled_at) " +
             "VALUES (#{id}, #{studentId}, #{courseId}, #{status}, #{enrolledAt})")

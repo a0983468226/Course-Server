@@ -26,18 +26,9 @@ public interface CourseRequestsMapper {
     @Delete("DELETE FROM course_requests WHERE id=#{id}")
     int delete(@Param("id") String id);
 
-    @Update({
-            "<script>",
-            "UPDATE course_requests",
-            "<set>",
-            "  <if test='studentId != null'>student_id = #{studentId},</if>",
-            "  <if test='courseId != null'>course_id = #{courseId},</if>",
-            "  <if test='type != null'>type = #{type},</if>",
-            "  <if test='reason != null'>reason = #{reason},</if>",
-            "  <if test='status != null'>status = #{status},</if>",
-            "</set>",
-            "WHERE id = #{id}",
-            "</script>"
-    })
+    @Update("Update course_requests set type =#{type} , reason = #{reason} where id = #{id}")
     int update(CourseRequestVO request);
+
+    @Update("Update course_requests set status =#{status}  where id = #{id}")
+    int updateStatusById(@Param("status") String status, @Param("id") String id);
 }

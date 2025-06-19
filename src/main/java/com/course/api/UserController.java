@@ -26,7 +26,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{id}")
+    // 查看個人資料
+    @GetMapping("my")
     public BasicResponse<FinduserByIdResponse> finduserById(@AuthenticationPrincipal JwtUserDetails user) {
         return ResponseUtil.execute(
                 () -> {
@@ -42,8 +43,8 @@ public class UserController {
         );
     }
 
-
-    @PutMapping("/{id}")
+    // 更新個人資料
+    @PutMapping("/my")
     public BasicResponse<UpdateUserResponse> updateUserById(@AuthenticationPrincipal JwtUserDetails user,
                                                             @RequestBody UpdateUserRequest request) {
         return ResponseUtil.execute(
@@ -61,6 +62,7 @@ public class UserController {
         );
     }
 
+    // 取得所有使用者資料
     @GetMapping()
     @AdminOnly
     public BasicResponse<FinduserResponse> findUser() {
@@ -104,6 +106,7 @@ public class UserController {
         );
     }
 
+    // 更新指定使用者資料
     @PutMapping()
     @AdminOnly
     public BasicResponse<UpdateUserResponse> updateUser(@Validated @RequestBody UpdateUserRequest request) {
@@ -120,6 +123,7 @@ public class UserController {
         );
     }
 
+    //刪除使用者
     @DeleteMapping("/{id}")
     @AdminOnly
     public BasicResponse<UpdateUserResponse> deleteUser(@PathVariable String id) {

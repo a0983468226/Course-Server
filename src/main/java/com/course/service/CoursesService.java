@@ -21,15 +21,15 @@ public class CoursesService {
         return coursesMapper.findById(id);
     }
 
-    public List<CourseDetailVO> findCoursesDetailByTeacher(String teacherId) throws Exception {
-        return coursesMapper.findCoursesDetailByTeacher(teacherId);
+    public List<CourseDetailVO> findCoursesDetailByUserId(String userid) throws Exception {
+        return coursesMapper.findCoursesDetailByUserId(userid);
     }
 
     public List<CourseDetailVO> findCoursesDetailBySemesters(String semesterId) throws Exception {
         return coursesMapper.findCoursesDetailBySemesters(semesterId);
     }
 
-    public List<courseRequestDetailVO> findCourseRequestByCourseId (String courseId) throws Exception {
+    public List<courseRequestDetailVO> findCourseRequestByCourseId(String courseId) throws Exception {
         return coursesMapper.findCourseRequestByCourseId(courseId);
     }
 
@@ -65,4 +65,5 @@ public class CoursesService {
             throw new IllegalStateException("刪除資料不為1筆");
         }
     }
+
 }

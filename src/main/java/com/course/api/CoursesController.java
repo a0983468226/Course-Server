@@ -29,6 +29,28 @@ public class CoursesController {
     @Autowired
     private CoursesService coursesService;
 
+    // 查詢我的課程
+    @GetMapping("/my")
+    public BasicResponse<FindCoursesByIdResponse> findTeacherCoursesById(@AuthenticationPrincipal JwtUserDetails user) {
+        return ResponseUtil.execute(
+                () -> {
+                    List<CourseDetailVO> vos = coursesService.findCoursesDetailByUserId(user.getUserId());
+                    List<Course> cList = new ArrayList<>();
+                    for (CourseDetailVO vo : vos) {
+                        Course c = new Course();
+                        BeanUtils.copyProperties(vo, c);
+                        cList.add(c);
+                    }
+                    FindCoursesByIdResponse data = new FindCoursesByIdResponse();
+                    data.setCourses(cList);
+                    return data;
+                },
+                "success",
+                "查詢失敗"
+        );
+    }
+
+    // 查詢單一課程
     @GetMapping("/{id}")
     public BasicResponse<CoursesResponse> findCoursesById(@PathVariable String id) {
         return ResponseUtil.execute(
@@ -45,6 +67,7 @@ public class CoursesController {
         );
     }
 
+    // 查詢單一課程加簽/退選申請
     @GetMapping("/{id}/course-requests")
     @TeacherOnly
     public BasicResponse<findCoursesRequestsByCourseResponse> findCoursesRequestsByCourse(@PathVariable String id) {
@@ -66,6 +89,7 @@ public class CoursesController {
         );
     }
 
+    // 查詢單一學期所有課程
     @GetMapping("/{id}/semesters")
     public BasicResponse<FindSemestersByCourseResponse> findSemestersByCourse(@PathVariable String id) {
         return ResponseUtil.execute(
@@ -102,26 +126,7 @@ public class CoursesController {
         );
     }
 
-    @GetMapping("/teacher/{id}")
-    public BasicResponse<FindCoursesByIdResponse> findTeacherCoursesById(@PathVariable String id) {
-        return ResponseUtil.execute(
-                () -> {
-                    List<CourseDetailVO> vos = coursesService.findCoursesDetailByTeacher(id);
-                    List<Course> cList = new ArrayList<>();
-                    for (CourseDetailVO vo : vos) {
-                        Course c = new Course();
-                        BeanUtils.copyProperties(vo, c);
-                        cList.add(c);
-                    }
-                    FindCoursesByIdResponse data = new FindCoursesByIdResponse();
-                    data.setCourses(cList);
-                    return data;
-                },
-                "success",
-                "查詢失敗"
-        );
-    }
-
+    // 更新課程資料
     @PutMapping()
     @TeacherOnly
     public BasicResponse<InsertCoursesResponse> updateCourses(@AuthenticationPrincipal JwtUserDetails user,
@@ -138,6 +143,7 @@ public class CoursesController {
         );
     }
 
+    // 新增課程
     @PostMapping()
     @TeacherOnly
     public BasicResponse<InsertCoursesResponse> insertCourses(@AuthenticationPrincipal JwtUserDetails user,
@@ -157,6 +163,7 @@ public class CoursesController {
         );
     }
 
+    // 刪除課程
     @DeleteMapping("/{id}")
     @AdminOnly
     public BasicResponse<DeleteCoursesResponse> deleteCourses(@PathVariable String id) {

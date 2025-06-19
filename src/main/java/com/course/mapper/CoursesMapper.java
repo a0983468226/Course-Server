@@ -31,7 +31,8 @@ public interface CoursesMapper {
             @Result(property = "semestersName", column = "semesters_name"),
             @Result(property = "startAt", column = "start_at"),
             @Result(property = "endAt", column = "end_at"),
-            @Result(property = "status", column = "status")
+            @Result(property = "status", column = "status"),
+            @Result(property = "studyNumber", column = "study_number")
     })
     List<CourseDetailVO> findCoursesDetail();
 
@@ -45,9 +46,9 @@ public interface CoursesMapper {
     @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
             "courses c join users u on c.teacher_id = u.id " +
             "join semesters s on s.id = c.semester_id " +
-            "where u.id = #{teacherId} and u.status = 1 and c.status = 1")
+            "where u.id = #{userId} and u.status = 1 and c.status = 1")
     @ResultMap("coursesMap")
-    List<CourseDetailVO> findCoursesDetailByTeacher(@Param("teacherId") String teacherId);
+    List<CourseDetailVO> findCoursesDetailByUserId(@Param("userId") String userId);
 
     @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
             "courses c join users u on c.teacher_id = u.id " +
@@ -55,7 +56,6 @@ public interface CoursesMapper {
             "where s.id = #{semesterId} and c.status = 1")
     @ResultMap("coursesMap")
     List<CourseDetailVO> findCoursesDetailBySemesters(@Param("semesterId") String semesterId);
-
 
     @SelectProvider(type = CourseSqlProvider.class, method = "buildSearchSql")
     List<CourseVO> findByParam(CourseQueryParam param);
@@ -87,6 +87,10 @@ public interface CoursesMapper {
             "</script>"
     })
     int teacherUpdateCourse(CourseVO course, @Param("teacherId") String teacherId);
+
+    @Update("UPDATE courses set study_number = #{studyNumber} where id = #{id}")
+    int updateStudyNumber(@Param("id") String id, @Param("studyNumber") int studyNumber);
+
 
     @Update("UPDATE courses set status = #{status} where id = #{id}")
     int updateStatus(@Param("id") String id, @Param("status") String status);

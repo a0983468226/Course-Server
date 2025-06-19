@@ -20,6 +20,7 @@ public class SemestersController {
     @Autowired
     private SemestersService semestersService;
 
+    // 更新學期資訊
     @PutMapping()
     @AdminOnly
     public BasicResponse<SemestersResponse> update(@RequestBody UpdateSemestersRequest query) {
@@ -28,7 +29,6 @@ public class SemestersController {
                     SemesterVO vo = new SemesterVO();
                     BeanUtils.copyProperties(query, vo);
                     semestersService.update(vo);
-
                     return new SemestersResponse();
                 },
                 "success",
@@ -36,6 +36,7 @@ public class SemestersController {
         );
     }
 
+    //新增學期
     @PostMapping()
     @AdminOnly
     public BasicResponse<SemestersResponse> insertCourses(
@@ -54,6 +55,7 @@ public class SemestersController {
         );
     }
 
+    // 刪除學期
     @DeleteMapping("/{id}")
     @AdminOnly
     public BasicResponse<SemestersResponse> deleteCourses(@PathVariable String id) {
