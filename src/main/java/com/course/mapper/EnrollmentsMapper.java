@@ -25,7 +25,7 @@ public interface EnrollmentsMapper {
             " FROM enrollments e join users on u.id = e.student_id" +
             " join courses c on c.id = e.course_id " +
             " where u.status = 1 and c.id = #{id}")
-    @Results(id = "basicMap", value = {
+    @Results(id = "studentMap", value = {
             @Result(property = "id", column = "id"),
             @Result(property = "studentId", column = "student_id"),
             @Result(property = "studentName", column = "student_name"),

@@ -1,6 +1,5 @@
 package com.course.mapper;
 
-import com.course.mapper.sqlprovider.CourseSqlProvider;
 import com.course.mapper.vo.CourseDetailVO;
 import com.course.mapper.vo.CourseVO;
 import com.course.mapper.vo.courseRequestDetailVO;
@@ -56,9 +55,6 @@ public interface CoursesMapper {
             "where s.id = #{semesterId} and c.status = 1")
     @ResultMap("coursesMap")
     List<CourseDetailVO> findCoursesDetailBySemesters(@Param("semesterId") String semesterId);
-
-    @SelectProvider(type = CourseSqlProvider.class, method = "buildSearchSql")
-    List<CourseVO> findByParam(CourseQueryParam param);
 
     @Insert("INSERT INTO courses (id, code, name, description, credit, teacher_id, capacity, semester_id, schedule, location , status) " +
             "VALUES (#{id}, #{code}, #{name}, #{description}, #{credit}, #{teacherId}, #{capacity}, #{semesterId}, #{schedule}, #{location} ,#{status})")

@@ -33,7 +33,7 @@ public class ResponseUtil {
             response.setMessage(errorMsg != null ? errorMsg : "執行失敗");
             response.setCode(500);
             response.setErrorType(e.getClass().getSimpleName());
-            e.printStackTrace(); // 可替換成 logger.error()
+            e.printStackTrace();
         }
 
         return response;

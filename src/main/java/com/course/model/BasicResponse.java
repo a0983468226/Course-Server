@@ -9,9 +9,9 @@ public class BasicResponse<T extends AbstractResponseData> implements Serializab
 
     private Boolean success = false;
 
-    private String code;
+    private int code;
 
-    private Integer errorType;
+    private String errorType;
 
     private String message;
 
