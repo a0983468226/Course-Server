@@ -8,4 +8,6 @@ public class Menu {
     private String title;
     private String description;
     private String role;
+    private String path;
+    private String icon;
 }

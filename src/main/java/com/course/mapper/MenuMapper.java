@@ -14,10 +14,11 @@ public interface MenuMapper {
             @Result(property = "title", column = "title"),
             @Result(property = "description", column = "description"),
             @Result(property = "role", column = "role"),
-            @Result(property = "path", column = "path")
+            @Result(property = "path", column = "path"),
+            @Result(property = "icon", column = "icon")
     })
-    MenuVO findById(@Param("id") String id);
 
+    MenuVO findById(@Param("id") String id);
     @Select("SELECT * FROM menu WHERE role = #{role}")
     @ResultMap("basicMap")
     List<MenuVO> findByRole(@Param("role") String role);
