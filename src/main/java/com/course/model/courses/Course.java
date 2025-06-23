@@ -21,4 +21,5 @@ public class Course {
     private String semestersName;
     private Date startAt;
     private Date endAt;
+    private String studyNumber;
 }

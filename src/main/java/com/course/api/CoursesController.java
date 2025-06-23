@@ -30,6 +30,27 @@ public class CoursesController {
     private CoursesService coursesService;
 
     // 查詢我的課程
+    @GetMapping()
+    public BasicResponse<FindCoursesByIdResponse> findCourses() {
+        return ResponseUtil.execute(
+                () -> {
+                    List<CourseDetailVO> vos = coursesService.findCoursesDetail();
+                    List<Course> cList = new ArrayList<>();
+                    for (CourseDetailVO vo : vos) {
+                        Course c = new Course();
+                        BeanUtils.copyProperties(c, vo);
+                        cList.add(c);
+                    }
+                    FindCoursesByIdResponse data = new FindCoursesByIdResponse();
+                    data.setCourses(cList);
+                    return data;
+                },
+                "success",
+                "查詢失敗"
+        );
+    }
+
+    // 查詢我的課程
     @GetMapping("/my")
     public BasicResponse<FindCoursesByIdResponse> findTeacherCoursesById(@AuthenticationPrincipal JwtUserDetails user) {
         return ResponseUtil.execute(
@@ -38,7 +59,7 @@ public class CoursesController {
                     List<Course> cList = new ArrayList<>();
                     for (CourseDetailVO vo : vos) {
                         Course c = new Course();
-                        BeanUtils.copyProperties(vo, c);
+                        BeanUtils.copyProperties(c, vo);
                         cList.add(c);
                     }
                     FindCoursesByIdResponse data = new FindCoursesByIdResponse();
@@ -58,7 +79,7 @@ public class CoursesController {
                     CoursesResponse data = new CoursesResponse();
                     CourseDetailVO vo = coursesService.findById(id);
                     if (vo != null) {
-                        BeanUtils.copyProperties(vo, data);
+                        BeanUtils.copyProperties(data, vo);
                     }
                     return data;
                 },
@@ -78,7 +99,7 @@ public class CoursesController {
                     List<courseRequestDetailVO> vos = coursesService.findCourseRequestByCourseId(id);
                     for (courseRequestDetailVO vo : vos) {
                         CoursesRequestsDetail detail = new CoursesRequestsDetail();
-                        BeanUtils.copyProperties(vo, detail);
+                        BeanUtils.copyProperties(detail ,vo );
                         list.add(detail);
                     }
                     data.setCoursesRequestsDetails(list);
@@ -99,7 +120,7 @@ public class CoursesController {
                     List<CourseDetailVO> vos = coursesService.findCoursesDetailBySemesters(id);
                     for (CourseDetailVO vo : vos) {
                         Semester detail = new Semester();
-                        BeanUtils.copyProperties(vo, detail);
+                        BeanUtils.copyProperties(detail, vo);
                         list.add(detail);
                     }
                     data.setSemesters(list);
@@ -134,7 +155,7 @@ public class CoursesController {
         return ResponseUtil.execute(
                 () -> {
                     CourseVO vo = new CourseVO();
-                    BeanUtils.copyProperties(query, vo);
+                    BeanUtils.copyProperties(vo, query);
                     coursesService.update(vo, user.getUserId());
                     return new InsertCoursesResponse();
                 },
@@ -151,7 +172,7 @@ public class CoursesController {
         return ResponseUtil.execute(
                 () -> {
                     CourseVO vo = new CourseVO();
-                    BeanUtils.copyProperties(query, vo);
+                    BeanUtils.copyProperties(vo,query );
                     vo.setId(CommonUtil.getUUID());
                     vo.setTeacherId(user.getUserId());
                     vo.setStatus(CourseStatus.PENDING.getValue());

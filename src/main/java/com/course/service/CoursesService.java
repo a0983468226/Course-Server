@@ -17,6 +17,10 @@ public class CoursesService {
     @Autowired
     private CoursesMapper coursesMapper;
 
+    public List<CourseDetailVO> findCoursesDetail() throws Exception {
+        return coursesMapper.findCoursesDetail();
+    }
+
     public CourseDetailVO findById(String id) throws Exception {
         return coursesMapper.findById(id);
     }

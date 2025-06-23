@@ -27,7 +27,7 @@ public class SemestersController {
         return ResponseUtil.execute(
                 () -> {
                     SemesterVO vo = new SemesterVO();
-                    BeanUtils.copyProperties(query, vo);
+                    BeanUtils.copyProperties(vo, query);
                     semestersService.update(vo);
                     return new SemestersResponse();
                 },
@@ -44,7 +44,7 @@ public class SemestersController {
         return ResponseUtil.execute(
                 () -> {
                     SemesterVO vo = new SemesterVO();
-                    BeanUtils.copyProperties(query, vo);
+                    BeanUtils.copyProperties(vo, query);
                     vo.setId(CommonUtil.getUUID());
 
                     semestersService.insert(vo);

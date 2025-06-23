@@ -35,7 +35,7 @@ public class TeacherController {
                     List<EnrollmentStudent> eList = new ArrayList<>();
                     for (EnrollmentStudentVO vo : vos) {
                         EnrollmentStudent c = new EnrollmentStudent();
-                        BeanUtils.copyProperties(vo, c);
+                        BeanUtils.copyProperties(c, vo);
                         eList.add(c);
                     }
                     FindStudentByCourseResponse data = new FindStudentByCourseResponse();

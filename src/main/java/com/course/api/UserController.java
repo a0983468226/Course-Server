@@ -34,7 +34,7 @@ public class UserController {
                     FinduserByIdResponse data = new FinduserByIdResponse();
                     UserVO vo = userService.findById(user.getUserId());
                     if (vo != null) {
-                        BeanUtils.copyProperties(vo, data);
+                        BeanUtils.copyProperties(data, vo);
                     }
                     return data;
                 },
@@ -72,7 +72,7 @@ public class UserController {
                     List<User> users = new ArrayList<>();
                     for (UserVO vo : vos) {
                         User user = new User();
-                        BeanUtils.copyProperties(vo, user);
+                        BeanUtils.copyProperties(user, vo);
                         users.add(user);
                     }
                     FinduserResponse data = new FinduserResponse();
