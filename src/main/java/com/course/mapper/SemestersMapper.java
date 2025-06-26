@@ -1,8 +1,9 @@
 package com.course.mapper;
 
 import com.course.mapper.vo.SemesterVO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface SemestersMapper {
@@ -16,6 +17,10 @@ public interface SemestersMapper {
             @Result(property = "endAt", column = "end_at")
     })
     SemesterVO findById(@Param("id") String id);
+
+    @Select("SELECT * FROM semesters ")
+    @ResultMap("basicMap")
+    List<SemesterVO> findAll();
 
     @Insert("INSERT INTO semesters (id, name, start_at, end_at) VALUES (#{id}, #{name}, #{startAt}, #{endAt})")
     int insert(SemesterVO semester);

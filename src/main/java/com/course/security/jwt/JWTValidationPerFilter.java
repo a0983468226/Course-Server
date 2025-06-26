@@ -112,7 +112,7 @@ public class JWTValidationPerFilter extends OncePerRequestFilter {
             return expiration.before(new Date());
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+           return true;
         }
     }
 

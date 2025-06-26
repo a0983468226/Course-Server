@@ -8,6 +8,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.*;
@@ -26,10 +27,12 @@ public class JWTServletRequestWrapper extends HttpServletRequestWrapper {
         JsonParser parser = new JsonParser();
         JsonObject jsonObject = null;
         try {
-            jsonObject = parser.parse(bodyStr).getAsJsonObject();
-            jsonObject.addProperty("requsterUserId", userId);
-            jsonObject.addProperty("requestTime", DateFormatUtils.format(requestTime, "yyyy-MM-dd HH:mm:ss.SSS"));
-            jsonObject.addProperty("txKey", txKey);
+            if (StringUtils.isNotBlank(bodyStr)) {
+                jsonObject = parser.parse(bodyStr).getAsJsonObject();
+                jsonObject.addProperty("requsterUserId", userId);
+                jsonObject.addProperty("requestTime", DateFormatUtils.format(requestTime, "yyyy-MM-dd HH:mm:ss.SSS"));
+                jsonObject.addProperty("txKey", txKey);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
