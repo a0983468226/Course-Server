@@ -13,4 +13,5 @@ public class CourseQueryParam {
     private Integer capacity;
     private String schedule;
     private String location;
+    private String semesterId;
 }

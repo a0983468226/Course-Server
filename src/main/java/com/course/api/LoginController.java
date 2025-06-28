@@ -115,6 +115,7 @@ public class LoginController {
             UserVO vo = new UserVO();
             vo.setId(user.getId());
             vo.setLastLoginTime(new Date());
+            vo.setStatus(1);
             userService.update(vo);
 
             response.setData(data);

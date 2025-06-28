@@ -21,6 +21,10 @@ public class CoursesService {
         return coursesMapper.findCoursesDetail();
     }
 
+    public List<CourseDetailVO> findPaddingCoursesDetail() throws Exception {
+        return coursesMapper.findPaddingCoursesDetail();
+    }
+
     public CourseDetailVO findById(String id) throws Exception {
         return coursesMapper.findById(id);
     }

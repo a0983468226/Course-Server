@@ -34,7 +34,7 @@ public interface UsersMapper {
     UserVO findByUsername(@Param("username") String username);
 
 
-    @Insert("INSERT INTO users (id, username, password_hash, name, email, role, created_at , status , is_first_login , , last_login_time) " +
+    @Insert("INSERT INTO users (id, username, password_hash, name, email, role, created_at , status , is_first_login ,update_at , last_login_time) " +
             "VALUES (#{id}, #{username}, #{passwordHash}, #{name}, #{email}, #{role}, #{createdAt} ,#{status} , #{isFirstLogin} ,#{updateAt} , #{lastLoginTime})")
     int insert(UserVO user);
 
@@ -53,6 +53,7 @@ public interface UsersMapper {
             "  <if test='isFirstLogin != null'>is_first_login = #{isFirstLogin},</if>",
             "  <if test='updateAt != null'>update_at = #{updateAt},</if>",
             "  <if test='lastLoginTime != null'>last_login_time = #{lastLoginTime},</if>",
+            "  <if test='status != null'>status = #{status},</if>",
             "</set>",
             "WHERE id = #{id}",
             "</script>"

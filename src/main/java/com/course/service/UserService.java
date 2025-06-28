@@ -52,7 +52,7 @@ public class UserService {
     }
 
     @Transactional
-    public synchronized void updateStatus(String id) throws Exception {
+    public synchronized void delete(String id) throws Exception {
 
         int count = usersMapper.delete(id);
         if (count != 1) {

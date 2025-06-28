@@ -92,7 +92,7 @@ public class UserController {
                 () -> {
                     UserVO vo = new UserVO();
                     BeanUtils.copyProperties(vo, request);
-                    vo.setPasswordHash(request.getPassword());
+                    vo.setPasswordHash("123456");
                     vo.setId(CommonUtil.getUUID());
                     vo.setCreatedAt(new Date());
                     vo.setStatus(1);
@@ -109,7 +109,7 @@ public class UserController {
     // 更新指定使用者資料
     @PutMapping()
     @AdminOnly
-    public BasicResponse<UpdateUserResponse> updateUser(@Validated @RequestBody UpdateUserRequest request) {
+    public BasicResponse<UpdateUserResponse> updateUser( @RequestBody UpdateUserRequest request) {
         return ResponseUtil.execute(
                 () -> {
                     UserVO vo = new UserVO();
@@ -129,7 +129,7 @@ public class UserController {
     public BasicResponse<UpdateUserResponse> deleteUser(@PathVariable String id) {
         return ResponseUtil.execute(
                 () -> {
-                    userService.updateStatus(id);
+                    userService.delete(id);
                     return new UpdateUserResponse();
                 },
                 "success",

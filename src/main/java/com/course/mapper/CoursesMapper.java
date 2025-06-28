@@ -37,6 +37,12 @@ public interface CoursesMapper {
 
     @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
             "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id where c.status = 2")
+    @ResultMap("coursesMap")
+    List<CourseDetailVO> findPaddingCoursesDetail();
+
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
             "join semesters s on s.id = c.semester_id " +
             "where c.id = #{coursesId} and c.status = 1")
     @ResultMap("coursesMap")

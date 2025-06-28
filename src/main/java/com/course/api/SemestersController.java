@@ -27,7 +27,6 @@ public class SemestersController {
 
     // 取得學期資訊
     @GetMapping()
-    @AdminOnly
     public BasicResponse<SemestersResponse> getSemesters() {
         return ResponseUtil.execute(
                 () -> {
