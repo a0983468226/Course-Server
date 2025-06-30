@@ -1,6 +1,7 @@
 package com.course.api;
 
 import com.course.enums.CourseStatus;
+import com.course.enums.UserRole;
 import com.course.mapper.vo.CourseDetailVO;
 import com.course.mapper.vo.CourseVO;
 import com.course.mapper.vo.courseRequestDetailVO;
@@ -50,33 +51,21 @@ public class CoursesController {
         );
     }
 
-    @GetMapping("/padding")
-    @AdminOnly
-    public BasicResponse<FindCoursesByIdResponse> findPaddingCourses() {
-        return ResponseUtil.execute(
-                () -> {
-                    List<CourseDetailVO> vos = coursesService.findCoursesDetail();
-                    List<Course> cList = new ArrayList<>();
-                    for (CourseDetailVO vo : vos) {
-                        Course c = new Course();
-                        BeanUtils.copyProperties(c, vo);
-                        cList.add(c);
-                    }
-                    FindCoursesByIdResponse data = new FindCoursesByIdResponse();
-                    data.setCourses(cList);
-                    return data;
-                },
-                "success",
-                "查詢失敗"
-        );
-    }
-
     // 查詢我的課程
     @GetMapping("/my")
     public BasicResponse<FindCoursesByIdResponse> findTeacherCoursesById(@AuthenticationPrincipal JwtUserDetails user) {
         return ResponseUtil.execute(
                 () -> {
-                    List<CourseDetailVO> vos = coursesService.findCoursesDetailByUserId(user.getUserId());
+                    String role = user.getRoles().get(0);
+                    List<CourseDetailVO> vos;
+                    if (role.equals(UserRole.ADMIN.toString())) {
+                        vos = coursesService.findPaddingCoursesDetail();
+                    } else if (role.equals(UserRole.TEACHER.toString())) {
+                        vos = coursesService.findTeacherCoursesDetail(user.getUserId());
+                    } else {
+                        vos = coursesService.findCoursesDetailByUserId(user.getUserId());
+                    }
+
                     List<Course> cList = new ArrayList<>();
                     for (CourseDetailVO vo : vos) {
                         Course c = new Course();
@@ -154,7 +143,7 @@ public class CoursesController {
 
     // 管理者審核課程
     @PutMapping("/audit")
-    @TeacherOnly
+    @AdminOnly
     public BasicResponse<InsertCoursesResponse> updateCoursesByAdmin(
             @RequestBody AuditRequest query) {
         return ResponseUtil.execute(
@@ -207,11 +196,11 @@ public class CoursesController {
 
     // 刪除課程
     @DeleteMapping("/{id}")
-    @AdminOnly
-    public BasicResponse<DeleteCoursesResponse> deleteCourses(@PathVariable String id) {
+    @TeacherOnly
+    public BasicResponse<DeleteCoursesResponse> deleteCourses(@AuthenticationPrincipal JwtUserDetails user,@PathVariable String id) {
         return ResponseUtil.execute(
                 () -> {
-                    coursesService.delete(id);
+                    coursesService.delete(id , user.getUserId());
                     return new DeleteCoursesResponse();
                 },
                 "success",

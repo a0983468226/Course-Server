@@ -19,7 +19,7 @@ public interface MenuMapper {
     })
 
     MenuVO findById(@Param("id") String id);
-    @Select("SELECT * FROM menu WHERE role = #{role}")
+    @Select("SELECT * FROM menu WHERE role = #{role} order by icon ")
     @ResultMap("basicMap")
     List<MenuVO> findByRole(@Param("role") String role);
 

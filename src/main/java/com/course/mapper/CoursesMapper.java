@@ -41,6 +41,14 @@ public interface CoursesMapper {
     @ResultMap("coursesMap")
     List<CourseDetailVO> findPaddingCoursesDetail();
 
+
+    @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
+            "courses c join users u on c.teacher_id = u.id " +
+            "join semesters s on s.id = c.semester_id where c.status in (1,2) and c.teacher_id = #{teacherId} "
+    )
+    @ResultMap("coursesMap")
+    List<CourseDetailVO> findTeacherCoursesDetail(@Param("teacherId") String teacherId);
+
     @Select("SELECT c.*,u.name as teacher_name,u.email, s.name as semesters_name,s.start_at , s.end_at FROM " +
             "courses c join users u on c.teacher_id = u.id " +
             "join semesters s on s.id = c.semester_id " +
@@ -67,8 +75,8 @@ public interface CoursesMapper {
     int insert(CourseVO course);
 
 
-    @Delete("DELETE FROM courses WHERE id=#{id}")
-    int delete(@Param("id") String id);
+    @Delete("DELETE FROM courses WHERE id=#{id} and teacher_id  = #{teacherId} ")
+    int delete(@Param("id") String id ,  @Param("teacherId") String teacherId);
 
     @Update({
             "<script>",

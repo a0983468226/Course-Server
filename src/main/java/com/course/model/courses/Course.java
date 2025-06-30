@@ -22,4 +22,5 @@ public class Course {
     private Date startAt;
     private Date endAt;
     private String studyNumber;
+    private String status;
 }

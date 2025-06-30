@@ -25,6 +25,10 @@ public class CoursesService {
         return coursesMapper.findPaddingCoursesDetail();
     }
 
+    public List<CourseDetailVO> findTeacherCoursesDetail(String teacherId) throws Exception {
+        return coursesMapper.findTeacherCoursesDetail(teacherId);
+    }
+
     public CourseDetailVO findById(String id) throws Exception {
         return coursesMapper.findById(id);
     }
@@ -67,8 +71,8 @@ public class CoursesService {
     }
 
     @Transactional
-    public synchronized void delete(String id) throws Exception {
-        int count = coursesMapper.delete(id);
+    public synchronized void delete(String id , String userid) throws Exception {
+        int count = coursesMapper.delete(id , userid);
         if (count != 1) {
             throw new IllegalStateException("刪除資料不為1筆");
         }
