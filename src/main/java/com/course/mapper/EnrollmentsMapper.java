@@ -39,6 +39,10 @@ public interface EnrollmentsMapper {
     @ResultMap("basicMap")
     List<EnrollmentVO> findByStudentAndCourse(@Param("studentId") String studentId, @Param("courseId") String courseId);
 
+    @Select("SELECT * FROM enrollments WHERE student_id = #{studentId}  ")
+    @ResultMap("basicMap")
+    List<EnrollmentVO> findByStudent(@Param("studentId") String studentId);
+
 
     @Update({
             "<script>",

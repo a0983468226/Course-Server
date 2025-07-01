@@ -2,21 +2,28 @@ package com.course.enums;
 
 public enum EnrollmentsStatus {
 
-    ENROLLED("enrolled"),
+    ENROLLED("enrolled", "選課成功"),
 
-    PENDING("pending"),
+    PENDING("pending", "審核中"),
 
-    WITHDRAWN("withdrawn");
+    WITHDRAWN("withdrawn", "選課失敗");
 
 
     private final String value;
 
-    EnrollmentsStatus(String value) {
+    private final String name;
+
+    EnrollmentsStatus(String value, String name) {
         this.value = value;
+        this.name = name;
     }
 
     public String getValue() {
         return value;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -31,5 +38,14 @@ public enum EnrollmentsStatus {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public static EnrollmentsStatus fromName(String name) {
+        for (EnrollmentsStatus status : EnrollmentsStatus.values()) {
+            if (status.name.equalsIgnoreCase(name)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value: " + name);
     }
 }

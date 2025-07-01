@@ -27,6 +27,10 @@ public class EnrollmentService {
         return enrollmentsMapper.findByCoursesId(id);
     }
 
+    public List<EnrollmentVO> findByStudentId(String id) throws Exception {
+        return enrollmentsMapper.findByStudent(id);
+    }
+
     @Transactional
     public synchronized void insertEnrollment(String userId, String courseId) throws Exception {
 
